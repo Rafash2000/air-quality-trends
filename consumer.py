@@ -16,6 +16,11 @@ consumer = Consumer(conf)
 # Subskrypcja topicu
 consumer.subscribe(['air_quality'])
 
+# Definiowanie bezwzględnej ścieżki do katalogu output
+output_dir = os.path.abspath("output")
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
 try:
     while True:
         msg = consumer.poll(1.0)
@@ -34,15 +39,12 @@ try:
         # Tworzenie pliku z danymi
         timestamp = datetime.now().strftime('%Y-%m-%d')
         filename = f"{timestamp}_air_quality.json"
-        file_path = os.path.join("output", filename)
-
-        if not os.path.exists("output"):
-            os.makedirs("output")
+        file_path = os.path.join(output_dir, filename)
 
         with open(file_path, "a") as f:
             json.dump(data, f)
             f.write("\n")
-
+            
 except KeyboardInterrupt:
     pass
 finally:
